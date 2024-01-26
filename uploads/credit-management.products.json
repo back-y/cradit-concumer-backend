@@ -1,0 +1,115 @@
+[{
+  "_id": {
+    "$oid": "6523e5e61447b86bb1d0f5fe"
+  },
+  "name": "Tomato",
+  "quantity": 200,
+  "price": 50,
+  "unit": "kgs",
+  "itemCode": "#222",
+  "status": "ACTIVE",
+  "description": "dskfdasdk",
+  "userId": {
+    "$oid": "6523e3051447b86bb1d0f5f7"
+  },
+  "createdAt": {
+    "$date": "2023-10-09T11:37:10.719Z"
+  },
+  "updatedAt": {
+    "$date": "2023-10-11T11:52:05.294Z"
+  },
+  "__v": 0,
+  "image": "a810c108fbae.jpg"
+},
+{
+  "_id": {
+    "$oid": "65268d4502afd848870f109b"
+  },
+  "name": "Potato",
+  "quantity": 300,
+  "price": 40,
+  "unit": "kgs",
+  "itemCode": "#322",
+  "status": "ACTIVE",
+  "description": "Fresh from the farmer i.e Kegeberew",
+  "userId": {
+    "$oid": "6523e3051447b86bb1d0f5f7"
+  },
+  "createdAt": {
+    "$date": "2023-10-11T11:55:49.409Z"
+  },
+  "updatedAt": {
+    "$date": "2023-10-11T11:57:09.557Z"
+  },
+  "__v": 0,
+  "image": "a2310b2554b.jpg"
+},
+{
+  "_id": {
+    "$oid": "65268e1002afd848870f10a1"
+  },
+  "name": "Carot",
+  "quantity": 150,
+  "price": 30,
+  "unit": "kgs",
+  "itemCode": "#122",
+  "status": "ACTIVE",
+  "description": "Fresh from the farmer i.e Kegeberew",
+  "userId": {
+    "$oid": "6523e3051447b86bb1d0f5f7"
+  },
+  "createdAt": {
+    "$date": "2023-10-11T11:59:12.703Z"
+  },
+  "updatedAt": {
+    "$date": "2023-10-11T11:59:53.574Z"
+  },
+  "__v": 0,
+  "image": "cb068833fe.jpg"
+},
+{
+  "_id": {
+    "$oid": "6526905d02afd848870f10a6"
+  },
+  "name": "Avocado",
+  "quantity": 450,
+  "price": 35,
+  "unit": "kgs",
+  "itemCode": "#422",
+  "status": "ACTIVE",
+  "description": "Fresh from the farmer i.e Kegeberew",
+  "userId": {
+    "$oid": "6523e3051447b86bb1d0f5f7"
+  },
+  "createdAt": {
+    "$date": "2023-10-11T12:09:01.621Z"
+  },
+  "updatedAt": {
+    "$date": "2023-10-11T12:11:18.224Z"
+  },
+  "__v": 0,
+  "image": "1d80e610ba5.jpeg"
+},
+{
+  "_id": {
+    "$oid": "6528003ba5eae76b64fd09e5"
+  },
+  "name": "Onion",
+  "quantity": 400,
+  "price": 25,
+  "unit": "kgs",
+  "itemCode": "#522",
+  "status": "ACTIVE",
+  "description": "Fresh from the farmer",
+  "userId": {
+    "$oid": "6523e3051447b86bb1d0f5f7"
+  },
+  "createdAt": {
+    "$date": "2023-10-12T14:18:35.160Z"
+  },
+  "updatedAt": {
+    "$date": "2023-10-12T14:20:40.841Z"
+  },
+  "__v": 0,
+  "image": "ff6515f365.jpg"
+}]
