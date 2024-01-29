@@ -96,6 +96,17 @@ export class OrderController {
     }
   }
 
+  @Get('totalOrderPrice')
+  // @UseGuards(JwtAuthGuard, RoleGuard)
+  // @Roles(Role.credit_manager)
+  async countOrders(){
+    const totalOrders =await this.orderService.totalOrderPrice();
+    return  totalOrders ;
+  };
+  /* @Get('allOrder')
+  async getallorders(){
+    return this.orderService.findallorder()
+  } */
   @Get('deliveryCustomer/:id')
   async deliveryCustomer(
     @Query() query: { orderDelivery: boolean },

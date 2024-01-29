@@ -31,7 +31,9 @@ export class OrderService {
       return error;
     }
   }
-
+async findallorder(){
+  return this.orderModel.find()
+}
   async create(createOrderDto: CreateOrderDto, jwt: any) {
     try {
       const { userId } = this.jwtService.decode(jwt) as { userId: any };
@@ -211,6 +213,27 @@ export class OrderService {
       return error;
     }
   }
+
+  async totalOrderPrice(): Promise<number> {
+    
+    try {
+      const orders: OrderDocument[] = await this.orderModel.find().exec();
+
+      // Calculate the sum of all order prices
+      let totalOrderPrice = 0;
+      orders.forEach(order => {
+        order.orderItems.forEach(item => {
+          totalOrderPrice += item.price * item.quantity;
+        });
+      });
+
+      return totalOrderPrice;
+    } catch (error) {
+      // Handle errors appropriately (e.g., log, throw, etc.)
+      throw error;
+    }
+  }
+
 
   async remove(id: string, jwt: any) {
     try {
