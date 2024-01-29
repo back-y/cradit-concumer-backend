@@ -7,6 +7,7 @@ import { Credit, CreditDocument } from './schemas/credit.schema';
 import { Model } from 'mongoose';
 import { JwtService } from '@nestjs/jwt';
 
+
 @Injectable()
 export class CreditService {
   constructor(
@@ -36,6 +37,56 @@ export class CreditService {
     }
   }
 
+async totalCreditGaven():  Promise<number> {
+  let totalPrice = 0;
+
+  try {
+      const credits = await this.creditModel.find({});
+
+      for (const credit of credits) {
+          totalPrice += credit.totalPrice;
+      }
+
+      return totalPrice;
+  } catch (error) {
+      console.error('Error calculating total price:', error);
+      throw error;
+  }
+}
+
+async calculateTotalPaidAmount(){
+  let totalPaidAmount = 0;
+
+  try {
+      const credits = await this.creditModel.find({});
+
+      for (const credit of credits) {
+        totalPaidAmount += credit.paidAmount || 0; 
+    }
+
+      return totalPaidAmount;
+  } catch (error) {
+      console.error('Error calculating total price:', error);
+      throw error;
+  }
+}
+
+async getCreditsByUserId(id: string): Promise<number> {
+  try {
+   
+      const credits = await this.creditModel.find({ userId: id });
+      let totalPrice = 0;
+      for (const credit of credits) {
+          totalPrice += credit.totalPrice;
+      }
+
+      return totalPrice;
+  } catch (error) {
+      // Handle errors appropriately
+      console.error('Error getting credits by user ID:', error);
+      throw error;
+  }
+}
   async create(createCreditDto: CreateCreditDto) {
     try {
       const newCredit = new this.creditModel({
