@@ -234,7 +234,159 @@ async findallorder(){
     }
   }
 
+async getTotalPriceOfPaidOrders(): Promise<number>{
+  let totalPaidAmount = 0;
 
+  try {
+      const credits = await this.orderModel.find({status:'PAID'});
+
+      for (const credit of credits) {
+        totalPaidAmount += credit.totalPrice || 0; 
+    }
+
+      return totalPaidAmount;
+  } catch (error) {
+      console.error('Error calculating total price:', error);
+      throw error;
+  }
+}
+async getTotalPendingOrders(): Promise<number>{
+  let totalPaidAmount = 0;
+
+  try {
+      const orders = await this.orderModel.find({status:'PENDING'});
+      console.log(orders)
+
+      for (const order of orders) {
+        totalPaidAmount += order.totalPrice || 0; 
+    }
+
+      return totalPaidAmount;
+  } catch (error) {
+      console.error('Error calculating total price:', error);
+      throw error;
+  }
+}
+async TotalOrderInfo(): Promise<any[]> {
+  try {
+    const totalOrderPrice = await this.totalOrderPrice();
+    const paidAmount = await this.getTotalPriceOfPaidOrders();
+    const PendingAmount = await this.getTotalPendingOrders();
+
+    // Construct JSON objects based on the returned values
+    const orderInfoArray = [
+      {
+        stats: `${totalOrderPrice} ETB`,
+        title: 'Total Order Price Given',
+        color: 'primary',
+      },
+      {
+        stats: `${paidAmount} ETB`,
+        title: 'Total Paid Orders Price',
+        color: 'success',
+      },
+      {
+        stats: `${PendingAmount} ETB`,
+        title: 'Total Pending Orders Price',
+        color: 'warning',
+      },
+    ];
+
+    return orderInfoArray;
+  } catch (error) {
+    // Handle errors appropriately
+    console.error('Error fetching total order info:', error);
+    throw error;
+  }
+}
+
+
+
+
+async getOrdersByUserId(id: string): Promise<number> {
+  try {
+   
+      const orders = await this.orderModel.find({ userId: id });
+      let totalPrice = 0;
+      for (const order of orders) {
+          totalPrice += order.totalPrice;
+      }
+
+      return totalPrice;
+  } catch (error) {
+      console.error('Error getting orders by user ID:', error);
+      throw error;
+  }
+}
+
+async getSingelUserPaindorderAmount(id:string): Promise<number>{
+    try{
+      const ordersWithUserId = await this.orderModel.find({ userId: id });
+
+      // Filter the orders with status equal to 'NOT_PAID'
+      const notPaidorders = ordersWithUserId.filter(order => order.status === 'PAID');
+
+      let totalPrice = 0;
+      for (const order of notPaidorders) {
+          totalPrice += order.totalPrice;
+      }
+
+      return totalPrice;
+  } catch (error) {
+      console.error('Error getting orders by user ID:', error);
+      throw error;
+  }
+}
+
+async getSingelUserPendingOrdersPrice(id:string): Promise<number>{
+  try{
+    const ordersWithUserId = await this.orderModel.find({ userId: id });
+    // Filter the orders with status equal to 'PAID'
+    const pendingOrders = ordersWithUserId.filter(order => order.status === 'PENDING');
+    let totalPrice = 0;
+    for (const order of pendingOrders) {
+        totalPrice += order.totalPrice;
+    }
+
+    return totalPrice;
+} catch (error) {
+    // Handle errors appropriately
+    console.error('Error getting orders by user ID:', error);
+    throw error;
+}
+}
+async getSingleUserOrderInfo(id:string) :Promise<any[]> {
+  try {
+    const totalorderGaven = await this.getOrdersByUserId(id);
+    const paidAmount = await this.getSingelUserPaindorderAmount(id);
+    const pendingOrders = await this.getSingelUserPendingOrdersPrice(id);
+
+    // Construct JSON objects based on the returned values
+    const orderInfoArray = [
+      {
+        stats: `${totalorderGaven} ETB`,
+        title: 'Total order Given',
+        color: 'primary',
+      },
+      {
+        stats: `${paidAmount} ETB`,
+        title: 'Total order Paid',
+        color: 'success',
+      },
+      {
+        stats: `${pendingOrders} ETB`,
+        title: 'Total order Pending',
+        color: 'warning',
+      },
+    ];
+
+    return orderInfoArray;
+  } catch (error) {
+    // Handle errors appropriately
+    console.error('Error fetching total order info:', error);
+    throw error;
+  }
+}
   async remove(id: string, jwt: any) {
     try {
       const { userId } = this.jwtService.decode(jwt) as { userId: any };

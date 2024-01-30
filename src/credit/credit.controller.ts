@@ -86,11 +86,17 @@ export class CreditController {
   totalCreditGaven() {
     return this.creditService.totalCreditGaven();
   }
+
   @Get('totalPaidAmount')
   // @UseGuards(JwtAuthGuard, RoleGuard)
   // @Roles(Role.credit_manager)
   calculateTotalPaidAmount(){
     return this.creditService.calculateTotalPaidAmount();
+  }
+  
+  @Get('TotalCreditInfo')
+  TotalCreditInfo(){
+    return this.creditService.TotalCreditInfo()
   }
 
   @Get('getCreditsByUserId/:id')
@@ -99,7 +105,10 @@ export class CreditController {
    getCreditsByUserId(@Param('id') id: string){
     return this.creditService.getCreditsByUserId(id)    
    }
-
+@Get('getSinglUserCreditInfo/:id')
+getSingleUserCreditInfo(@Param('id') id: string){
+  return this.creditService.getSingleUserCreditInfo(id)
+}
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.creditService.findOne(id);
