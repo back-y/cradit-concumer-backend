@@ -7,7 +7,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { OrderSchema } from './schemas/order.schema';
 import { CreditModule } from 'src/credit/credit.module';
 import { CreditInfoModule } from 'src/credit-info/credit-info.module';
-import { ProductModule } from 'src/product/product.module';
+import { ProductModule } from 'src/individual/product/product.module';
 
 @Module({
   imports: [
