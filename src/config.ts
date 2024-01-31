@@ -1,5 +1,5 @@
 export const config = () => {
-  console.log(process.env.MONGO_DEV_URI);
+  // console.log(process.env.MONGO_DEV_URI);
   return {
     port: parseInt(process.env.PORT, 10) || 3000,
     jwtSecret: process.env.JWT_SECRET,

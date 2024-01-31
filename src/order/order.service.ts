@@ -60,8 +60,10 @@ export class OrderService {
       // Use for...of loop to handle async/await properly
       for (const item of createOrderDto.orderItems) {
         const product = await this.productService.findOne(item._id);
-        console.log('order', product);
-        totalPrice += product.price * item.quantity;
+        if (product) {
+          console.log('order', product);
+          totalPrice += product.price * item.quantity;
+        }
       }
 
       console.log('totalPrice', totalPrice);
@@ -70,19 +72,22 @@ export class OrderService {
       if (remainingCredit < totalPrice) {
         return 'Not enough credit';
       }
+      let newOrder = null;
 
-      const newOrder = await this.orderModel.create({
-        ...createOrderDto,
-        userId,
-        userName,
-        userEmail,
-        totalPrice,
-        creditInfoId: creditInfo._id,
-      });
+      if (totalPrice > 0) {
+        newOrder = await this.orderModel.create({
+          ...createOrderDto,
+          userId,
+          userName,
+          userEmail,
+          totalPrice,
+          creditInfoId: creditInfo._id,
+        });
+      } else {
+        return 'Something went wrong';
+      }
 
       // TODO: Notifiy credit manager
-
-      console.log(newOrder);
 
       return newOrder;
     } catch (error) {
