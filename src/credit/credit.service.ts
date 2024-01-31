@@ -58,16 +58,67 @@ async calculateTotalPaidAmount(){
   let totalPaidAmount = 0;
 
   try {
-      const credits = await this.creditModel.find({});
+      const credits = await this.creditModel.find({status:'PAID'});
 
       for (const credit of credits) {
-        totalPaidAmount += credit.paidAmount || 0; 
+        totalPaidAmount += credit.totalPrice || 0; 
     }
 
       return totalPaidAmount;
   } catch (error) {
       console.error('Error calculating total price:', error);
       throw error;
+  }
+}
+
+
+async calculateTotalUnPaidAmount(){
+  let totalPaidAmount = 0;
+
+  try {
+      const credits = await this.creditModel.find({status:'NOT_PAID'});
+
+      for (const credit of credits) {
+        totalPaidAmount += credit.totalPrice || 0; 
+    }
+
+      return totalPaidAmount;
+  } catch (error) {
+      console.error('Error calculating total price:', error);
+      throw error;
+  }
+}
+
+async TotalCreditInfo(): Promise<any[]> {
+  try {
+    const totalCreditGaven = await this.totalCreditGaven();
+    const paidAmount = await this.calculateTotalPaidAmount();
+    const unPaidAmount = await this.calculateTotalUnPaidAmount();
+
+    // Construct JSON objects based on the returned values
+    const creditInfoArray = [
+      {
+        stats: `${totalCreditGaven} ETB`,
+        title: 'Total Credit Given',
+        color: 'primary',
+      },
+      {
+        stats: `${paidAmount} ETB`,
+        title: 'Total Credit Paid',
+        color: 'success',
+      },
+      {
+        stats: `${unPaidAmount} ETB`,
+        title: 'Total Credit Unpaid',
+        color: 'warning',
+      },
+    ];
+
+    return creditInfoArray;
+  } catch (error) {
+    // Handle errors appropriately
+    console.error('Error fetching total credit info:', error);
+    throw error;
   }
 }
 
@@ -82,11 +133,80 @@ async getCreditsByUserId(id: string): Promise<number> {
 
       return totalPrice;
   } catch (error) {
-      // Handle errors appropriately
       console.error('Error getting credits by user ID:', error);
       throw error;
   }
 }
+
+async getSingelUserPaidCreditAmount(id:string): Promise<number>{
+    try{
+      const creditsWithUserId = await this.creditModel.find({ userId: id });
+
+      // Filter the credits with status equal to 'NOT_PAID'
+      const notPaidCredits = creditsWithUserId.filter(credit => credit.status === 'PAID');
+
+      let totalPrice = 0;
+      for (const credit of notPaidCredits) {
+          totalPrice += credit.totalPrice;
+      }
+
+      return totalPrice;
+  } catch (error) {
+      console.error('Error getting credits by user ID:', error);
+      throw error;
+  }
+}
+
+async getSingelUserUnpaidCreditAmount(id:string): Promise<number>{
+  try{
+    const creditsWithUserId = await this.creditModel.find({ userId: id });
+    // Filter the credits with status equal to 'PAID'
+    const notPaidCredits = creditsWithUserId.filter(credit => credit.status === 'NOT_PAID');
+    let totalPrice = 0;
+    for (const credit of notPaidCredits) {
+        totalPrice += credit.totalPrice;
+    }
+
+    return totalPrice;
+} catch (error) {
+    // Handle errors appropriately
+    console.error('Error getting credits by user ID:', error);
+    throw error;
+}
+}
+async getSingleUserCreditInfo(id:string) :Promise<any[]> {
+  try {
+    const totalCreditGaven = await this.getCreditsByUserId(id);
+    const paidAmount = await this.getSingelUserPaidCreditAmount(id);
+    const unPaidAmount = await this.getSingelUserUnpaidCreditAmount(id);
+
+    // Construct JSON objects based on the returned values
+    const creditInfoArray = [
+      {
+        stats: `${totalCreditGaven} ETB`,
+        title: 'Total Credit Given',
+        color: 'primary',
+      },
+      {
+        stats: `${paidAmount} ETB`,
+        title: 'Total Credit Paid',
+        color: 'success',
+      },
+      {
+        stats: `${unPaidAmount} ETB`,
+        title: 'Total Credit Unpaid',
+        color: 'warning',
+      },
+    ];
+
+    return creditInfoArray;
+  } catch (error) {
+    // Handle errors appropriately
+    console.error('Error fetching total credit info:', error);
+    throw error;
+  }
+}
+
   async create(createCreditDto: CreateCreditDto) {
     try {
       const newCredit = new this.creditModel({
