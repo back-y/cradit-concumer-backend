@@ -22,6 +22,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { UseInterceptors } from '@nestjs/common';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
+import { Role } from 'src/auth/schemas/role.enum';
 
 @Controller('credit')
 export class CreditController {
@@ -79,7 +80,35 @@ export class CreditController {
   findAll() {
     return this.creditService.findAll();
   }
+  @Get('totalCreditGaven')
+  // @UseGuards(JwtAuthGuard, RoleGuard)
+  // @Roles(Role.credit_manager)
+  totalCreditGaven() {
+    return this.creditService.totalCreditGaven();
+  }
 
+  @Get('totalPaidAmount')
+  // @UseGuards(JwtAuthGuard, RoleGuard)
+  // @Roles(Role.credit_manager)
+  calculateTotalPaidAmount(){
+    return this.creditService.calculateTotalPaidAmount();
+  }
+  
+  @Get('TotalCreditInfo')
+  TotalCreditInfo(){
+    return this.creditService.TotalCreditInfo()
+  }
+
+  @Get('getCreditsByUserId/:id')
+  // @UseGuards(JwtAuthGuard, RoleGuard)
+  //  @Roles(Role.customer)
+   getCreditsByUserId(@Param('id') id: string){
+    return this.creditService.getCreditsByUserId(id)    
+   }
+@Get('getSinglUserCreditInfo/:id')
+getSingleUserCreditInfo(@Param('id') id: string){
+  return this.creditService.getSingleUserCreditInfo(id)
+}
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.creditService.findOne(id);
