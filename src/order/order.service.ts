@@ -15,7 +15,8 @@ import { ProductService } from 'src/product/product.service';
 @Injectable()
 export class OrderService {
   constructor(
-    @InjectModel(Order.name) private orderModel: Model<OrderDocument>,
+    @InjectModel(Order.name) 
+    private orderModel: Model<OrderDocument>,
     private jwtService: JwtService,
     private userService: UserService,
     private creditService: CreditService,
@@ -32,7 +33,7 @@ export class OrderService {
     }
   }
 async findallorder(){
-  return this.orderModel.find()
+  return this.orderModel.find().sort({ createdAt: -1 }).exec();
 }
   async create(createOrderDto: CreateOrderDto, jwt: any) {
     try {
@@ -186,7 +187,7 @@ async findallorder(){
 
       const updateDeliveryStatus = await this.orderModel.findByIdAndUpdate(
         id,
-        { isDeliveredCustomer: orderDelivery },
+        { isDeliveredCustomer: orderDelivery},
         { new: true },
       );
 

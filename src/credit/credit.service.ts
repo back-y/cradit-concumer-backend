@@ -220,7 +220,7 @@ async getSingleUserCreditInfo(id:string) :Promise<any[]> {
   }
 
   async findAll() {
-    return await this.creditModel.find();
+    return await this.creditModel.find().sort({ createdAt: -1 }).exec();;
   }
 
   async findOne(id: string) {
