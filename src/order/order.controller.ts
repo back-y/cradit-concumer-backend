@@ -106,24 +106,24 @@ export class OrderController {
   @Get('totalOrderPrice')
   // @UseGuards(JwtAuthGuard, RoleGuard)
   // @Roles(Role.credit_manager)
-  async countOrders(){
-    const totalOrders =await this.orderService.totalOrderPrice();
-    return  totalOrders ;
-  };
-   @Get('allOrder')
-  async getallorders(){
-    return this.orderService.findallorder()
-  } 
+  async countOrders() {
+    const totalOrders = await this.orderService.totalOrderPrice();
+    return totalOrders;
+  }
+  @Get('allOrder')
+  async getallorders() {
+    return this.orderService.findallorder();
+  }
 
   @Get('totalOrderInfo')
   // @UseGuards(JwtAuthGuard, RoleGuard)
   // @Roles(Role.credit_manager)
-  async TotalOrderInfo(){
+  async TotalOrderInfo() {
     return this.orderService.TotalOrderInfo();
   }
   @Get('customerOrderInfo/:id')
-  async getSingleUserOrderInfo( @Param('id') id: string){
-    return this.orderService.getSingleUserOrderInfo(id)
+  async getSingleUserOrderInfo(@Param('id') id: string) {
+    return this.orderService.getSingleUserOrderInfo(id);
   }
   @Get('deliveryCustomer/:id')
   async deliveryCustomer(

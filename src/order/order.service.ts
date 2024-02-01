@@ -101,10 +101,13 @@ export class OrderService {
   async updateStatus(orderStatus: UpdateOrderStatusDto, id: string, jwt: any) {
     try {
       const { userId } = this.jwtService.decode(jwt) as { userId: any };
+      console.log(userId);
 
       const checkOrder = await this.orderModel.findById(id);
 
       if (!checkOrder) return 'Order not found';
+
+      let updatedOrder;
 
       if (orderStatus.status === 'ACCEPTED') {
         // add order to credit
@@ -129,13 +132,31 @@ export class OrderService {
           checkOrder.creditInfoId,
           checkOrder.totalPrice,
         );
-      }
 
-      const updatedOrder = await this.orderModel.findByIdAndUpdate(
-        id,
-        { status: orderStatus.status },
-        { new: true },
-      );
+        updatedOrder = await this.orderModel.findByIdAndUpdate(
+          id,
+          { status: orderStatus.status, acceptedBy: userId },
+          { new: true },
+        );
+      } else if (orderStatus.status === 'PAID') {
+        updatedOrder = await this.orderModel.findByIdAndUpdate(
+          id,
+          { status: orderStatus.status, paidBy: userId },
+          { new: true },
+        );
+      } else if (orderStatus.status === 'REJECTED') {
+        updatedOrder = await this.orderModel.findByIdAndUpdate(
+          id,
+          { status: orderStatus.status, rejectedBy: userId },
+          { new: true },
+        );
+      } else if (orderStatus.status === 'DELIVERED') {
+        updatedOrder = await this.orderModel.findByIdAndUpdate(
+          id,
+          { status: orderStatus.status, deliveredBy: userId },
+          { new: true },
+        );
+      }
 
       return updatedOrder;
     } catch (error) {}
