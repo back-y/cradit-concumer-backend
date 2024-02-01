@@ -6,6 +6,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Credit, CreditDocument } from './schemas/credit.schema';
 import { Model } from 'mongoose';
 import { JwtService } from '@nestjs/jwt';
+import * as dayjs from 'dayjs';
 
 
 @Injectable()
@@ -16,6 +17,7 @@ export class CreditService {
     private jwtService: JwtService,
   ) {}
 
+  
   private async handlePromise(promise: Promise<any>): Promise<any> {
     try {
       const result = await promise;
@@ -88,12 +90,40 @@ async calculateTotalUnPaidAmount(){
       throw error;
   }
 }
+async  withInterest() {
+  let totalWithInterest = 0;
+
+  try {
+    const credits = await this.creditModel.find({ status: 'NOT_PAID' });
+    const currentMonth = dayjs();
+
+    for (const credit of credits) {
+      const creditMonth = dayjs(credit.createdAt);
+      const monthsDifference = currentMonth.diff(creditMonth, 'month');
+
+      if (monthsDifference >= 1) {
+        const daysAfterFirstMonth = currentMonth.diff(creditMonth.add(1, 'month'), 'day');
+        const interestRate = 0.05;
+        const interest = credit.totalPrice * interestRate * daysAfterFirstMonth / 365;
+
+        totalWithInterest += credit.totalPrice + interest;
+      }
+    }
+
+    return totalWithInterest;
+  } catch (error) {
+    console.error('Error calculating total price with interest:', error);
+    throw error;
+  }
+}
+
 
 async TotalCreditInfo(): Promise<any[]> {
   try {
     const totalCreditGaven = await this.totalCreditGaven();
     const paidAmount = await this.calculateTotalPaidAmount();
     const unPaidAmount = await this.calculateTotalUnPaidAmount();
+    const withInterest= await this.withInterest()
 
     // Construct JSON objects based on the returned values
     const creditInfoArray = [
@@ -111,7 +141,11 @@ async TotalCreditInfo(): Promise<any[]> {
         stats: `${unPaidAmount} ETB`,
         title: 'Total Credit Unpaid',
         color: 'warning',
-      },
+      },{
+    stats: `${withInterest}`,
+    color: 'info',
+    title: 'Total Unpaid Credit With Interest',
+  }
     ];
 
     return creditInfoArray;
@@ -174,6 +208,9 @@ async getSingelUserUnpaidCreditAmount(id:string): Promise<number>{
     throw error;
 }
 }
+
+
+
 async getSingleUserCreditInfo(id:string) :Promise<any[]> {
   try {
     const totalCreditGaven = await this.getCreditsByUserId(id);
@@ -220,7 +257,7 @@ async getSingleUserCreditInfo(id:string) :Promise<any[]> {
   }
 
   async findAll() {
-    return await this.creditModel.find();
+    return await this.creditModel.find().sort({ createdAt: -1 }).exec();;
   }
 
   async findOne(id: string) {

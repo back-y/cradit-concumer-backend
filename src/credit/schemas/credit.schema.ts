@@ -6,7 +6,7 @@ import { orderItems } from 'src/order/dto/create-order.dto';
 
 export type CreditDocument = HydratedDocument<Credit>;
 
-export class Comments {
+export class Comments  {
   @Prop({ required: true, default: '' })
   title: string;
 
@@ -18,9 +18,12 @@ export class Comments {
 }
 
 @Schema({ timestamps: true })
-export class Credit {
+export class Credit  {
   @Prop({ required: true })
   totalPrice: number;
+
+  @Prop({ required: false })
+  createdAt: Date;
 
   @Prop({ required: true, default: CreditStatus.NOT_PAID })
   status: CreditStatus;

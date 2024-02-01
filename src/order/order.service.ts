@@ -15,7 +15,8 @@ import { ProductService } from 'src/individual/product/product.service';
 @Injectable()
 export class OrderService {
   constructor(
-    @InjectModel(Order.name) private orderModel: Model<OrderDocument>,
+    @InjectModel(Order.name) 
+    private orderModel: Model<OrderDocument>,
     private jwtService: JwtService,
     private userService: UserService,
     private creditService: CreditService,
@@ -31,9 +32,10 @@ export class OrderService {
       return error;
     }
   }
-  async findallorder() {
-    return this.orderModel.find();
-  }
+async findallorder(){
+  return this.orderModel.find().sort({ createdAt: -1 }).exec();
+}
+ 
   async create(createOrderDto: CreateOrderDto, jwt: any) {
     try {
       const { userId } = this.jwtService.decode(jwt) as { userId: any };
@@ -101,10 +103,13 @@ export class OrderService {
   async updateStatus(orderStatus: UpdateOrderStatusDto, id: string, jwt: any) {
     try {
       const { userId } = this.jwtService.decode(jwt) as { userId: any };
+      console.log(userId);
 
       const checkOrder = await this.orderModel.findById(id);
 
       if (!checkOrder) return 'Order not found';
+
+      let updatedOrder;
 
       if (orderStatus.status === 'ACCEPTED') {
         // add order to credit
@@ -129,13 +134,31 @@ export class OrderService {
           checkOrder.creditInfoId,
           checkOrder.totalPrice,
         );
-      }
 
-      const updatedOrder = await this.orderModel.findByIdAndUpdate(
-        id,
-        { status: orderStatus.status },
-        { new: true },
-      );
+        updatedOrder = await this.orderModel.findByIdAndUpdate(
+          id,
+          { status: orderStatus.status, acceptedBy: userId },
+          { new: true },
+        );
+      } else if (orderStatus.status === 'PAID') {
+        updatedOrder = await this.orderModel.findByIdAndUpdate(
+          id,
+          { status: orderStatus.status, paidBy: userId },
+          { new: true },
+        );
+      } else if (orderStatus.status === 'REJECTED') {
+        updatedOrder = await this.orderModel.findByIdAndUpdate(
+          id,
+          { status: orderStatus.status, rejectedBy: userId },
+          { new: true },
+        );
+      } else if (orderStatus.status === 'DELIVERED') {
+        updatedOrder = await this.orderModel.findByIdAndUpdate(
+          id,
+          { status: orderStatus.status, deliveredBy: userId },
+          { new: true },
+        );
+      }
 
       return updatedOrder;
     } catch (error) {}
@@ -191,7 +214,7 @@ export class OrderService {
 
       const updateDeliveryStatus = await this.orderModel.findByIdAndUpdate(
         id,
-        { isDeliveredCustomer: orderDelivery },
+        { isDeliveredCustomer: orderDelivery},
         { new: true },
       );
 

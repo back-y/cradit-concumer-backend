@@ -60,8 +60,11 @@ export class CustomerService {
     }
   }
 
-  async create(createCustomerDto: CreateCustomerDto) {
+  async create(createCustomerDto: CreateCustomerDto, profilePicture: Array<Express.Multer.File>) {
     const customer = new this.customerModel(createCustomerDto)
+    const  filename= profilePicture[0].filename;
+    customer.profilePicture = filename
+
     return await customer.save();
   }
 
@@ -76,6 +79,30 @@ export class CustomerService {
   async update(id: string, updateCustomerDto: UpdateCustomerDto) {
     return await this.customerModel.findByIdAndUpdate(id, updateCustomerDto, {new: true});
   }
+  /* async update(id: string, updateCustomerDto: UpdateCustomerDto, profilePicture: Express.Multer.File[]) {
+    const updatedCustomer = await this.customerModel.findById(id);
+  
+    if (!updatedCustomer) {
+      throw new NotFoundException('Customer not found');
+    }
+  
+    updatedCustomer.name = updateCustomerDto.name;
+    updatedCustomer.email = updateCustomerDto.email;
+    updatedCustomer.phone = updateCustomerDto.phone;
+    updatedCustomer.company = updateCustomerDto.company;
+    updatedCustomer.pending = updateCustomerDto.pending;
+    updatedCustomer.creditInfo = updateCustomerDto.creditInfo;
+    updatedCustomer.userId = updateCustomerDto.userId;
+    updatedCustomer.approvedBy = updateCustomerDto.approvedBy;
+  
+    if (profilePicture && profilePicture.length > 0) {
+      const filename = profilePicture[0].filename.toString();
+      updatedCustomer.profilePicture = filename;
+    }
+  
+    return await updatedCustomer.save();
+  } */
+  
 
   async remove(id: string) {
     await this.deleteFiles(id)
