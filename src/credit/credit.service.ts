@@ -97,7 +97,7 @@ async  withInterest() {
     const credits = await this.creditModel.find({ status: 'NOT_PAID' });
     const currentMonth = dayjs();
 
-  /*   for (const credit of credits) {
+    for (const credit of credits) {
       const creditMonth = dayjs(credit.createdAt);
       const monthsDifference = currentMonth.diff(creditMonth, 'month');
 
@@ -108,7 +108,7 @@ async  withInterest() {
 
         totalWithInterest += credit.totalPrice + interest;
       }
-    } */
+    }
 
     return totalWithInterest;
   } catch (error) {
