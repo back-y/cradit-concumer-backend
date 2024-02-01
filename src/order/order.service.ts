@@ -32,15 +32,10 @@ export class OrderService {
       return error;
     }
   }
-<<<<<<< HEAD
 async findallorder(){
   return this.orderModel.find().sort({ createdAt: -1 }).exec();
 }
-=======
-  async findallorder() {
-    return this.orderModel.find();
-  }
->>>>>>> a2b99ed9d470e5f8100d4cd7f959173ff828dc37
+ 
   async create(createOrderDto: CreateOrderDto, jwt: any) {
     try {
       const { userId } = this.jwtService.decode(jwt) as { userId: any };
