@@ -53,6 +53,21 @@ export class Order {
 
   @Prop({ ref: 'User', type: mongoose.Schema.Types.ObjectId })
   acceptedBy: User;
+
+  @Prop({ ref: 'User', type: mongoose.Schema.Types.ObjectId })
+  rejectedBy: User;
+
+  @Prop({ ref: 'User', type: mongoose.Schema.Types.ObjectId })
+  deliveredBy: User;
+
+  @Prop({ ref: 'User', type: mongoose.Schema.Types.ObjectId })
+  paidBy: User;
+
+  @Prop({ ref: 'User', type: mongoose.Schema.Types.ObjectId })
+  processedBy: User;
+
+  @Prop({ ref: 'User', type: mongoose.Schema.Types.ObjectId })
+  editedBy: User;
 }
 
 export const OrderSchema = SchemaFactory.createForClass(Order);

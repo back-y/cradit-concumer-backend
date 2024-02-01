@@ -10,7 +10,7 @@ import { CreditService } from 'src/credit/credit.service';
 import { CreditInfoService } from 'src/credit-info/credit-info.service';
 import * as dayjs from 'dayjs';
 import { UpdateOrderStatusDto } from './dto/update-order-status.dto';
-import { ProductService } from 'src/product/product.service';
+import { ProductService } from 'src/individual/product/product.service';
 
 @Injectable()
 export class OrderService {
@@ -32,9 +32,15 @@ export class OrderService {
       return error;
     }
   }
+<<<<<<< HEAD
 async findallorder(){
   return this.orderModel.find().sort({ createdAt: -1 }).exec();
 }
+=======
+  async findallorder() {
+    return this.orderModel.find();
+  }
+>>>>>>> a2b99ed9d470e5f8100d4cd7f959173ff828dc37
   async create(createOrderDto: CreateOrderDto, jwt: any) {
     try {
       const { userId } = this.jwtService.decode(jwt) as { userId: any };
@@ -63,8 +69,10 @@ async findallorder(){
       // Use for...of loop to handle async/await properly
       for (const item of createOrderDto.orderItems) {
         const product = await this.productService.findOne(item._id);
-        console.log('order', product);
-        totalPrice += product.price * item.quantity;
+        if (product) {
+          console.log('order', product);
+          totalPrice += product.price * item.quantity;
+        }
       }
 
       console.log('totalPrice', totalPrice);
@@ -73,19 +81,22 @@ async findallorder(){
       if (remainingCredit < totalPrice) {
         return 'Not enough credit';
       }
+      let newOrder = null;
 
-      const newOrder = await this.orderModel.create({
-        ...createOrderDto,
-        userId,
-        userName,
-        userEmail,
-        totalPrice,
-        creditInfoId: creditInfo._id,
-      });
+      if (totalPrice > 0) {
+        newOrder = await this.orderModel.create({
+          ...createOrderDto,
+          userId,
+          userName,
+          userEmail,
+          totalPrice,
+          creditInfoId: creditInfo._id,
+        });
+      } else {
+        return 'Something went wrong';
+      }
 
       // TODO: Notifiy credit manager
-
-      console.log(newOrder);
 
       return newOrder;
     } catch (error) {
@@ -97,10 +108,13 @@ async findallorder(){
   async updateStatus(orderStatus: UpdateOrderStatusDto, id: string, jwt: any) {
     try {
       const { userId } = this.jwtService.decode(jwt) as { userId: any };
+      console.log(userId);
 
       const checkOrder = await this.orderModel.findById(id);
 
       if (!checkOrder) return 'Order not found';
+
+      let updatedOrder;
 
       if (orderStatus.status === 'ACCEPTED') {
         // add order to credit
@@ -125,13 +139,31 @@ async findallorder(){
           checkOrder.creditInfoId,
           checkOrder.totalPrice,
         );
-      }
 
-      const updatedOrder = await this.orderModel.findByIdAndUpdate(
-        id,
-        { status: orderStatus.status },
-        { new: true },
-      );
+        updatedOrder = await this.orderModel.findByIdAndUpdate(
+          id,
+          { status: orderStatus.status, acceptedBy: userId },
+          { new: true },
+        );
+      } else if (orderStatus.status === 'PAID') {
+        updatedOrder = await this.orderModel.findByIdAndUpdate(
+          id,
+          { status: orderStatus.status, paidBy: userId },
+          { new: true },
+        );
+      } else if (orderStatus.status === 'REJECTED') {
+        updatedOrder = await this.orderModel.findByIdAndUpdate(
+          id,
+          { status: orderStatus.status, rejectedBy: userId },
+          { new: true },
+        );
+      } else if (orderStatus.status === 'DELIVERED') {
+        updatedOrder = await this.orderModel.findByIdAndUpdate(
+          id,
+          { status: orderStatus.status, deliveredBy: userId },
+          { new: true },
+        );
+      }
 
       return updatedOrder;
     } catch (error) {}
@@ -216,14 +248,13 @@ async findallorder(){
   }
 
   async totalOrderPrice(): Promise<number> {
-    
     try {
       const orders: OrderDocument[] = await this.orderModel.find().exec();
 
       // Calculate the sum of all order prices
       let totalOrderPrice = 0;
-      orders.forEach(order => {
-        order.orderItems.forEach(item => {
+      orders.forEach((order) => {
+        order.orderItems.forEach((item) => {
           totalOrderPrice += item.price * item.quantity;
         });
       });
@@ -235,159 +266,159 @@ async findallorder(){
     }
   }
 
-async getTotalPriceOfPaidOrders(): Promise<number>{
-  let totalPaidAmount = 0;
+  async getTotalPriceOfPaidOrders(): Promise<number> {
+    let totalPaidAmount = 0;
 
-  try {
-      const credits = await this.orderModel.find({status:'PAID'});
+    try {
+      const credits = await this.orderModel.find({ status: 'PAID' });
 
       for (const credit of credits) {
-        totalPaidAmount += credit.totalPrice || 0; 
-    }
+        totalPaidAmount += credit.totalPrice || 0;
+      }
 
       return totalPaidAmount;
-  } catch (error) {
+    } catch (error) {
       console.error('Error calculating total price:', error);
       throw error;
+    }
   }
-}
-async getTotalPendingOrders(): Promise<number>{
-  let totalPaidAmount = 0;
+  async getTotalPendingOrders(): Promise<number> {
+    let totalPaidAmount = 0;
 
-  try {
-      const orders = await this.orderModel.find({status:'PENDING'});
-      console.log(orders)
+    try {
+      const orders = await this.orderModel.find({ status: 'PENDING' });
+      console.log(orders);
 
       for (const order of orders) {
-        totalPaidAmount += order.totalPrice || 0; 
-    }
+        totalPaidAmount += order.totalPrice || 0;
+      }
 
       return totalPaidAmount;
-  } catch (error) {
+    } catch (error) {
       console.error('Error calculating total price:', error);
       throw error;
+    }
   }
-}
-async TotalOrderInfo(): Promise<any[]> {
-  try {
-    const totalOrderPrice = await this.totalOrderPrice();
-    const paidAmount = await this.getTotalPriceOfPaidOrders();
-    const PendingAmount = await this.getTotalPendingOrders();
+  async TotalOrderInfo(): Promise<any[]> {
+    try {
+      const totalOrderPrice = await this.totalOrderPrice();
+      const paidAmount = await this.getTotalPriceOfPaidOrders();
+      const PendingAmount = await this.getTotalPendingOrders();
 
-    // Construct JSON objects based on the returned values
-    const orderInfoArray = [
-      {
-        stats: `${totalOrderPrice} ETB`,
-        title: 'Total Order Price Given',
-        color: 'primary',
-      },
-      {
-        stats: `${paidAmount} ETB`,
-        title: 'Total Paid Orders Price',
-        color: 'success',
-      },
-      {
-        stats: `${PendingAmount} ETB`,
-        title: 'Total Pending Orders Price',
-        color: 'warning',
-      },
-    ];
+      // Construct JSON objects based on the returned values
+      const orderInfoArray = [
+        {
+          stats: `${totalOrderPrice} ETB`,
+          title: 'Total Order Price Given',
+          color: 'primary',
+        },
+        {
+          stats: `${paidAmount} ETB`,
+          title: 'Total Paid Orders Price',
+          color: 'success',
+        },
+        {
+          stats: `${PendingAmount} ETB`,
+          title: 'Total Pending Orders Price',
+          color: 'warning',
+        },
+      ];
 
-    return orderInfoArray;
-  } catch (error) {
-    // Handle errors appropriately
-    console.error('Error fetching total order info:', error);
-    throw error;
+      return orderInfoArray;
+    } catch (error) {
+      // Handle errors appropriately
+      console.error('Error fetching total order info:', error);
+      throw error;
+    }
   }
-}
 
-
-
-
-async getOrdersByUserId(id: string): Promise<number> {
-  try {
-   
+  async getOrdersByUserId(id: string): Promise<number> {
+    try {
       const orders = await this.orderModel.find({ userId: id });
       let totalPrice = 0;
       for (const order of orders) {
-          totalPrice += order.totalPrice;
+        totalPrice += order.totalPrice;
       }
 
       return totalPrice;
-  } catch (error) {
+    } catch (error) {
       console.error('Error getting orders by user ID:', error);
       throw error;
+    }
   }
-}
 
-async getSingelUserPaindorderAmount(id:string): Promise<number>{
-    try{
+  async getSingelUserPaindorderAmount(id: string): Promise<number> {
+    try {
       const ordersWithUserId = await this.orderModel.find({ userId: id });
 
       // Filter the orders with status equal to 'NOT_PAID'
-      const notPaidorders = ordersWithUserId.filter(order => order.status === 'PAID');
+      const notPaidorders = ordersWithUserId.filter(
+        (order) => order.status === 'PAID',
+      );
 
       let totalPrice = 0;
       for (const order of notPaidorders) {
-          totalPrice += order.totalPrice;
+        totalPrice += order.totalPrice;
       }
 
       return totalPrice;
-  } catch (error) {
+    } catch (error) {
       console.error('Error getting orders by user ID:', error);
       throw error;
-  }
-}
-
-async getSingelUserPendingOrdersPrice(id:string): Promise<number>{
-  try{
-    const ordersWithUserId = await this.orderModel.find({ userId: id });
-    // Filter the orders with status equal to 'PAID'
-    const pendingOrders = ordersWithUserId.filter(order => order.status === 'PENDING');
-    let totalPrice = 0;
-    for (const order of pendingOrders) {
-        totalPrice += order.totalPrice;
     }
-
-    return totalPrice;
-} catch (error) {
-    // Handle errors appropriately
-    console.error('Error getting orders by user ID:', error);
-    throw error;
-}
-}
-async getSingleUserOrderInfo(id:string) :Promise<any[]> {
-  try {
-    const totalorderGaven = await this.getOrdersByUserId(id);
-    const paidAmount = await this.getSingelUserPaindorderAmount(id);
-    const pendingOrders = await this.getSingelUserPendingOrdersPrice(id);
-
-    // Construct JSON objects based on the returned values
-    const orderInfoArray = [
-      {
-        stats: `${totalorderGaven} ETB`,
-        title: 'Total order Given',
-        color: 'primary',
-      },
-      {
-        stats: `${paidAmount} ETB`,
-        title: 'Total order Paid',
-        color: 'success',
-      },
-      {
-        stats: `${pendingOrders} ETB`,
-        title: 'Total order Pending',
-        color: 'warning',
-      },
-    ];
-
-    return orderInfoArray;
-  } catch (error) {
-    // Handle errors appropriately
-    console.error('Error fetching total order info:', error);
-    throw error;
   }
-}
+
+  async getSingelUserPendingOrdersPrice(id: string): Promise<number> {
+    try {
+      const ordersWithUserId = await this.orderModel.find({ userId: id });
+      // Filter the orders with status equal to 'PAID'
+      const pendingOrders = ordersWithUserId.filter(
+        (order) => order.status === 'PENDING',
+      );
+      let totalPrice = 0;
+      for (const order of pendingOrders) {
+        totalPrice += order.totalPrice;
+      }
+
+      return totalPrice;
+    } catch (error) {
+      // Handle errors appropriately
+      console.error('Error getting orders by user ID:', error);
+      throw error;
+    }
+  }
+  async getSingleUserOrderInfo(id: string): Promise<any[]> {
+    try {
+      const totalorderGaven = await this.getOrdersByUserId(id);
+      const paidAmount = await this.getSingelUserPaindorderAmount(id);
+      const pendingOrders = await this.getSingelUserPendingOrdersPrice(id);
+
+      // Construct JSON objects based on the returned values
+      const orderInfoArray = [
+        {
+          stats: `${totalorderGaven} ETB`,
+          title: 'Total order Given',
+          color: 'primary',
+        },
+        {
+          stats: `${paidAmount} ETB`,
+          title: 'Total order Paid',
+          color: 'success',
+        },
+        {
+          stats: `${pendingOrders} ETB`,
+          title: 'Total order Pending',
+          color: 'warning',
+        },
+      ];
+
+      return orderInfoArray;
+    } catch (error) {
+      // Handle errors appropriately
+      console.error('Error fetching total order info:', error);
+      throw error;
+    }
+  }
   async remove(id: string, jwt: any) {
     try {
       const { userId } = this.jwtService.decode(jwt) as { userId: any };

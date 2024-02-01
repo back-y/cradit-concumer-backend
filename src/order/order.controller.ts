@@ -49,10 +49,17 @@ export class OrderController {
     @Req() req: Request,
   ) {
     try {
+      // return res.status(200).json({ msg: 'msg' });
       const result = await this.orderService.create(
         createOrderDto,
         req.cookies['jwt'],
       );
+
+      if (result === 'Something went wrong') {
+        throw new NotFoundException(
+          'Somethig went wrong contact system administrators',
+        );
+      }
 
       if (result === "User doesn't have credit info") {
         throw new NotFoundException("User doesn't have credit info");
@@ -99,24 +106,24 @@ export class OrderController {
   @Get('totalOrderPrice')
   // @UseGuards(JwtAuthGuard, RoleGuard)
   // @Roles(Role.credit_manager)
-  async countOrders(){
-    const totalOrders =await this.orderService.totalOrderPrice();
-    return  totalOrders ;
-  };
-   @Get('allOrder')
-  async getallorders(){
-    return this.orderService.findallorder()
-  } 
+  async countOrders() {
+    const totalOrders = await this.orderService.totalOrderPrice();
+    return totalOrders;
+  }
+  @Get('allOrder')
+  async getallorders() {
+    return this.orderService.findallorder();
+  }
 
   @Get('totalOrderInfo')
   // @UseGuards(JwtAuthGuard, RoleGuard)
   // @Roles(Role.credit_manager)
-  async TotalOrderInfo(){
+  async TotalOrderInfo() {
     return this.orderService.TotalOrderInfo();
   }
   @Get('customerOrderInfo/:id')
-  async getSingleUserOrderInfo( @Param('id') id: string){
-    return this.orderService.getSingleUserOrderInfo(id)
+  async getSingleUserOrderInfo(@Param('id') id: string) {
+    return this.orderService.getSingleUserOrderInfo(id);
   }
   @Get('deliveryCustomer/:id')
   async deliveryCustomer(
@@ -149,10 +156,19 @@ export class OrderController {
   }
 
   @Get()
-  async findAll(@Res() res: Response, @Req() req: Request, @Headers() headers: Record<string, string>) {
-    console.log(" Corporate Order Controller --- @Get() to findAll(): \nbody:", req.body, "\nheaders: " , headers)
-    console.log("request cookies: ", req.cookies)
-    const jwt = headers.authorization
+  async findAll(
+    @Res() res: Response,
+    @Req() req: Request,
+    @Headers() headers: Record<string, string>,
+  ) {
+    console.log(
+      ' Corporate Order Controller --- @Get() to findAll(): \nbody:',
+      req.body,
+      '\nheaders: ',
+      headers,
+    );
+    console.log('request cookies: ', req.cookies);
+    const jwt = headers.authorization;
     return await this.handlePromise(
       this.orderService.findAll(headers.authorization.split(' ')[1]),
       res,
@@ -162,7 +178,7 @@ export class OrderController {
   @Get(':id')
   async findOne(@Param('id') id: string, res: Response) {
     // return await this.handlePromise(this.orderService.findOne(id), res);
-    return this.orderService.findOne(id)
+    return this.orderService.findOne(id);
   }
 
   @Patch(':id')

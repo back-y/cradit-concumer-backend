@@ -19,7 +19,7 @@ import { NewUserModule } from './new-user/new-user.module';
 import { CustomerModule } from './customer/customer.module';
 import { IndividualModule } from './individual/individual.module';
 
-import { ScheduleModule } from '@nestjs/schedule'
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -27,7 +27,7 @@ import { ScheduleModule } from '@nestjs/schedule'
     //   rootPath: join(__dirname, '..', 'uploads'),
     // }),
     ScheduleModule.forRoot(),
-    
+
     ConfigModule.forRoot({
       load: [config],
       isGlobal: true,
@@ -41,7 +41,7 @@ import { ScheduleModule } from '@nestjs/schedule'
     AuthModule,
     CreditModule,
     CreditInfoModule,
-    ProductModule,
+    // ProductModule,
     OrderModule,
     CreditInfoUserModule,
     CreditUserModule,
@@ -49,7 +49,7 @@ import { ScheduleModule } from '@nestjs/schedule'
     CustomerModule,
     IndividualModule,
   ],
-  controllers: [AppController, FileController, ],
-  providers: [AppService,],
+  controllers: [AppController, FileController],
+  providers: [AppService],
 })
 export class AppModule {}

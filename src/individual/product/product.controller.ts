@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+} from '@nestjs/common';
 import { ProductService } from './product.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
@@ -16,10 +25,12 @@ export class ProductController {
   getDocumentCount() {
     return this.productService.getDocumentCount();
   }
-  
+
   @Get()
   findAll(@Query('page') page = 1, @Query('limit') limit = 8) {
-    return this.productService.findAll(page, limit);
+    let products = this.productService.findAll(page, limit);
+
+    return products;
   }
 
   @Get(':id')
