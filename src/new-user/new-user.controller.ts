@@ -50,8 +50,28 @@ export class NewUserController {
     }
     
     @Post()
-    create(@Body() createNewUserDto: CreateNewUserDto) {
-        return this.newUserService.create(createNewUserDto)
+  @UseInterceptors(
+    FileFieldsInterceptor([
+        { name: 'profilePicture', maxCount: 1 },
+        ], {
+        storage: diskStorage({
+        destination: './uploads',
+        filename: (req, file, cb) => {
+            const randomName = Array(10)
+            .fill(null)
+            .map(() => Math.round(Math.random() * 16).toString(16))
+            .join('');
+            return cb(null, `${randomName}${extname(file.originalname)}`);
+        },
+        }),
+    }),
+  )
+  create(
+    @UploadedFiles() files: { 
+      profilePicture: Express.Multer.File, 
+    },@Body() createNewUserDto: CreateNewUserDto) {
+      const profilePicture = files.profilePicture;
+        return this.newUserService.create(createNewUserDto,[profilePicture])
     }
 
     @Get()

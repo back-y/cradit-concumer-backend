@@ -36,6 +36,8 @@ export class NewUser {
 
   @Prop({ required: true, default:true})
   pending: boolean;
+  @Prop({ required: false }) 
+  profilePicture: string; 
 
 }
 
