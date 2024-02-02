@@ -81,6 +81,7 @@ export class NewUserService {
     async create(createNewUserDto: CreateNewUserDto,profilePicture: Array<Express.Multer.File>) {
         this.sendWelcomeEmail(createNewUserDto.name, createNewUserDto.email)
         const newUser = new this.newUserModel(createNewUserDto);
+        console.log(createNewUserDto)
         const  filename= profilePicture[0][0].filename;
         newUser.profilePicture = filename
 
