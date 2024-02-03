@@ -94,7 +94,6 @@ export class NewUserController {
   //     }
   @Post()
   create(@Body() createNewUserDto: CreateNewUserDto) {
-    console.log(createNewUserDto)
     return this.newUserService.create(createNewUserDto);
   }
   @Get()
