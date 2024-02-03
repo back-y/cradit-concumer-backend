@@ -22,6 +22,9 @@ export class Credit  {
   @Prop({ required: true })
   totalPrice: number;
 
+  @Prop({required:false})
+  withInterest:number
+
   @Prop({ required: false })
   createdAt: Date;
 

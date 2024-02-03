@@ -60,10 +60,17 @@ export class CustomerService {
     }
   }
 
-  async create(createCustomerDto: CreateCustomerDto, profilePicture: Array<Express.Multer.File>) {
+
+  // async create(createCustomerDto: CreateCustomerDto, profilePicture: Array<Express.Multer.File>) {
+  //   const customer = new this.customerModel(createCustomerDto)
+  //   const  filename= profilePicture[0][0].filename;
+  //   customer.profilePicture = filename
+
+  //   return await customer.save();
+  // }
+  async create(createCustomerDto: CreateCustomerDto) {
     const customer = new this.customerModel(createCustomerDto)
-    const  filename= profilePicture[0].filename;
-    customer.profilePicture = filename
+
 
     return await customer.save();
   }

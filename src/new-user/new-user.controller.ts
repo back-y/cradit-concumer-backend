@@ -49,31 +49,34 @@ export class NewUserController {
         return await this.newUserService.uploadFiles([file1, file2, file3, file4], id);
     }
     
-    @Post()
-  @UseInterceptors(
-    FileFieldsInterceptor([
-        { name: 'profilePicture', maxCount: 1 },
-        ], {
-        storage: diskStorage({
-        destination: './uploads',
-        filename: (req, file, cb) => {
-            const randomName = Array(10)
-            .fill(null)
-            .map(() => Math.round(Math.random() * 16).toString(16))
-            .join('');
-            return cb(null, `${randomName}${extname(file.originalname)}`);
-        },
-        }),
-    }),
-  )
-  create(
-    @UploadedFiles() files: { 
-      profilePicture: Express.Multer.File, 
-    },@Body() createNewUserDto: CreateNewUserDto) {
-      const profilePicture = files.profilePicture;
-        return this.newUserService.create(createNewUserDto,[profilePicture])
-    }
-
+//     @Post()
+//   @UseInterceptors(
+//     FileFieldsInterceptor([
+//         { name: 'profilePicture', maxCount: 1 },
+//         ], {
+//         storage: diskStorage({
+//         destination: './uploads',
+//         filename: (req, file, cb) => {
+//             const randomName = Array(10)
+//             .fill(null)
+//             .map(() => Math.round(Math.random() * 16).toString(16))
+//             .join('');
+//             return cb(null, `${randomName}${extname(file.originalname)}`);
+//         },
+//         }),
+//     }),
+//   )
+//   create(
+//     @UploadedFiles() files: { 
+//       profilePicture: Express.Multer.File, 
+//     },@Body() createNewUserDto: CreateNewUserDto) {
+//       const profilePicture = files.profilePicture;
+//         return this.newUserService.create(createNewUserDto,[profilePicture])
+//     }
+@Post()
+create(@Body() createNewUserDto: CreateNewUserDto) {
+      return this.newUserService.create(createNewUserDto)
+  }
     @Get()
     findAll() {
         return this.newUserService.findAll();

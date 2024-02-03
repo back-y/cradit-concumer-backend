@@ -41,8 +41,8 @@ export class CreateCustomerDto {
   @IsNotEmpty()
   approvedBy: string;
 
-  @IsOptional()
-  @IsNotEmpty()
-  profilePicture: string;
+  // @IsOptional()
+  // @IsNotEmpty()
+  // profilePicture: string;
 
 }
