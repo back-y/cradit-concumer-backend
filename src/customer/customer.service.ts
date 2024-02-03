@@ -75,6 +75,7 @@ export class CustomerService {
     return await customer.save();
   }
 
+  
   async findAll() {
     return await this.customerModel.find();
   }

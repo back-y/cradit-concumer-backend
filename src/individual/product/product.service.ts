@@ -30,7 +30,7 @@ export class ProductService {
   });
 
   // @Cron(CronExpression.EVERY_DAY_AT_1PM)
-  @Cron(CronExpression.EVERY_30_MINUTES)
+  @Cron(CronExpression.EVERY_6_HOURS)
   async updateProducts(createProductDto: CreateProductDto) {
     console.log(
       `Triggered for ${this.count++} time, current page = ${

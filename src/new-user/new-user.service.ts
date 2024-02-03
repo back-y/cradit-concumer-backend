@@ -92,6 +92,9 @@ export class NewUserService {
         this.sendWelcomeEmail(createNewUserDto.name, createNewUserDto.email)
         const newUser = new this.newUserModel(createNewUserDto);
         
+        console.log(createNewUserDto)
+        
+
         console.log(newUser)
 
         return await newUser.save();
