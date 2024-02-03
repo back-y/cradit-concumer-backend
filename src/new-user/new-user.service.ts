@@ -90,9 +90,9 @@ export class NewUserService {
     // }
     async create(createNewUserDto: CreateNewUserDto) {
         this.sendWelcomeEmail(createNewUserDto.name, createNewUserDto.email)
+            console.log("data from the front: ",createNewUserDto)
         const newUser = new this.newUserModel(createNewUserDto);
         
-        console.log(createNewUserDto)
         
 
         console.log(newUser)
