@@ -7,6 +7,7 @@ import { Credit, CreditDocument } from './schemas/credit.schema';
 import { Model } from 'mongoose';
 import { JwtService } from '@nestjs/jwt';
 import * as dayjs from 'dayjs';
+import { Cron, CronExpression } from '@nestjs/schedule';
 
 
 @Injectable()
@@ -26,6 +27,34 @@ export class CreditService {
       return error;
     }
   }
+
+  @Cron('*/5 * * * *')
+  async calculateInterest(): Promise<void> {
+  const currentDate = new Date();
+  const thresholdDate = new Date(currentDate.getTime() - 35 * 24 * 60 * 60 * 1000); // 35 days ago
+
+  // Find credits older than 35 days
+  const credits = await this.creditModel.find({
+    createdAt: { $lt: thresholdDate }
+  });
+
+  // Calculate and update interest for each credit
+  for (const credit of credits) {
+    const timeDiff = currentDate.getTime() - Math.max(credit.createdAt.getTime(), thresholdDate.getTime());
+    const minutesSinceThreshold = Math.floor(timeDiff / (1000 * 60));
+
+    // Check if it has been at least one day since the credit became older than 35 days
+    const daysSinceThreshold = Math.floor(minutesSinceThreshold / (24 * 60));
+      // Calculate interest for each day since the credit became older than 35 days
+      const interestRate = 0.01; // Assuming a 5% monthly interest rate
+      const interest = credit.totalPrice * interestRate * daysSinceThreshold / 30; // Assuming 30 days in a month
+
+      // Update credit with new interest value
+      credit.withInterest += interest;
+      await credit.save();
+    
+  }
+}
 
   async uploadFile(file: Express.Multer.File, id: string) {
     try {
@@ -103,7 +132,7 @@ async  withInterest() {
 
       if (monthsDifference >= 1) {
         const daysAfterFirstMonth = currentMonth.diff(creditMonth.add(1, 'month'), 'day');
-        const interestRate = 0.05;
+        const interestRate = 0.01;
         const interest = credit.totalPrice * interestRate * daysAfterFirstMonth / 365;
 
         totalWithInterest += credit.totalPrice + interest;
@@ -116,7 +145,6 @@ async  withInterest() {
     throw error;
   }
 }
-
 
 async TotalCreditInfo(): Promise<any[]> {
   try {
@@ -210,12 +238,39 @@ async getSingelUserUnpaidCreditAmount(id:string): Promise<number>{
 }
 
 
+async withInterestForSinglUser (userId: string) {
+  let totalWithInterest = 0;
+
+  try {
+    const credits = await this.creditModel.find({ userId, status: 'NOT_PAID' });
+    const currentMonth = dayjs();
+
+    for (const credit of credits) {
+      const creditMonth = dayjs(credit.createdAt);
+      const monthsDifference = currentMonth.diff(creditMonth, 'month');
+
+      if (monthsDifference >= 1) {
+        const daysAfterFirstMonth = currentMonth.diff(creditMonth.add(1, 'month'), 'day');
+        const interestRate = 0.01;
+        const interest = credit.totalPrice * interestRate * daysAfterFirstMonth / 365;
+
+        totalWithInterest += credit.totalPrice + interest;
+      }
+    }
+
+    return totalWithInterest;
+  } catch (error) {
+    console.error('Error calculating total price with interest:', error);
+    throw error;
+  }
+}
 
 async getSingleUserCreditInfo(id:string) :Promise<any[]> {
   try {
     const totalCreditGaven = await this.getCreditsByUserId(id);
     const paidAmount = await this.getSingelUserPaidCreditAmount(id);
     const unPaidAmount = await this.getSingelUserUnpaidCreditAmount(id);
+    const withInterest = await this.withInterestForSinglUser(id)
 
     // Construct JSON objects based on the returned values
     const creditInfoArray = [
@@ -234,6 +289,11 @@ async getSingleUserCreditInfo(id:string) :Promise<any[]> {
         title: 'Total Credit Unpaid',
         color: 'warning',
       },
+      {
+        stats: `${withInterest}`,
+        color: 'info',
+        title: 'Total Unpaid Credit With Interest',
+      }
     ];
 
     return creditInfoArray;
