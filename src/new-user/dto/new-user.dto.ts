@@ -1,4 +1,12 @@
-import { IsNotEmpty, IsString, IsEmail, IsOptional, IsJSON, IsBoolean } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsString,
+  IsEmail,
+  IsNumber,
+  IsOptional,
+  IsJSON,
+  IsBoolean,
+} from 'class-validator';
 import { Documents } from '../interfaces/documents.interface';
 
 export class CreateNewUserDto {
@@ -27,7 +35,21 @@ export class CreateNewUserDto {
   @IsOptional()
   @IsNotEmpty()
   @IsBoolean()
-  pending: boolean; 
+  pending: boolean;
 
+  @IsNotEmpty()
+  @IsNumber()
+  numberOfEmployees: number;
 
+  @IsNotEmpty()
+  @IsNumber()
+  numberOfBranches: number;
+
+  @IsNotEmpty()
+  @IsNumber()
+  expectedCredit: number;
+
+  @IsNotEmpty()
+  @IsString()
+  businessType: string;
 }

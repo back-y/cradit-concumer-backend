@@ -18,7 +18,7 @@ import { JwtAuthGuard } from './guards/jwt.guard';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) { }
+  constructor(private readonly authService: AuthService) {}
 
   @Get()
   async findAll() {
@@ -27,7 +27,7 @@ export class AuthController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.authService.findOne(id)
+    return this.authService.findOne(id);
   }
 
   @Post('login')
@@ -51,13 +51,17 @@ export class AuthController {
       email: user.email,
       phone: user.phone,
       role: user.role,
-      jwt
+      jwt,
     });
   }
 
   @Post('signup')
   async signup(@Body() SignupDto: SignupDto, @Res() res: Response) {
     try {
+      if (1 == 1) {
+        res.status(403);
+        throw new UnauthorizedException('User Testing');
+      }
       const userExists = await this.authService.findUser(SignupDto.email);
 
       if (userExists) {

@@ -1,4 +1,12 @@
-import { IsNotEmpty, IsString, IsEmail, IsOptional, IsJSON, IsBoolean } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsNumber,
+  IsString,
+  IsEmail,
+  IsOptional,
+  IsJSON,
+  IsBoolean,
+} from 'class-validator';
 import { Documents } from '../interfaces/documents.interface';
 
 export class CreateCustomerDto {
@@ -27,7 +35,7 @@ export class CreateCustomerDto {
   @IsOptional()
   @IsNotEmpty()
   @IsBoolean()
-  pending: boolean; 
+  pending: boolean;
 
   @IsOptional()
   @IsNotEmpty()
@@ -41,8 +49,23 @@ export class CreateCustomerDto {
   @IsNotEmpty()
   approvedBy: string;
 
+  @IsNotEmpty()
+  @IsNumber()
+  numberOfEmployees: number;
+
+  @IsNotEmpty()
+  @IsNumber()
+  numberOfBranches: number;
+
+  @IsNotEmpty()
+  @IsNumber()
+  expectedCredit: number;
+
+  @IsNotEmpty()
+  @IsString()
+  businessType: string;
+
   // @IsOptional()
   // @IsNotEmpty()
   // profilePicture: string;
-
 }

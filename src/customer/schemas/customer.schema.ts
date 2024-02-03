@@ -31,13 +31,28 @@ export class Customer {
   @Prop({ required: false })
   company: string;
 
-  @Prop({ required: true, default: { ID: '', TIN: '', License: '', R_Cert: ''} })
+  @Prop({ required: true })
+  numberOfEmployees: number;
+
+  @Prop({ required: true })
+  numberOfBranches: number;
+
+  @Prop({ required: true })
+  expectedCredit: number;
+
+  @Prop({ required: false })
+  businessType: string;
+
+  @Prop({
+    required: true,
+    default: { ID: '', TIN: '', License: '', R_Cert: '' },
+  })
   documents: Documents;
 
-  @Prop({ required: true, default: false})
+  @Prop({ required: true, default: false })
   pending: boolean;
 
-  @Prop({ required: true, default: '0.00'})
+  @Prop({ required: true, default: '0.00' })
   creditInfo: string;
 
   @Prop({ required: false })
@@ -46,7 +61,7 @@ export class Customer {
   @Prop({ required: false })
   approvedBy: string;
   // @Prop({ required: false }) // New profile picture field
-  // profilePicture: string; 
+  // profilePicture: string;
 }
 
 export const CustomerSchema = SchemaFactory.createForClass(Customer);
