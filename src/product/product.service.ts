@@ -39,67 +39,6 @@ export class ProductService {
     stock_status: item.stock_status,
   });
 
-  // @Cron(CronExpression.EVERY_DAY_AT_1PM)
-  @Cron(CronExpression.EVERY_30_SECONDS)
-  async updateProducts(createProductDto: CreateProductDto) {
-    console.log(
-      `Triggered for ${this.count++} time, current page = ${
-        this.page
-      }, and productsOnPage = ${this.productsOnPage}`,
-    );
-
-    this.productsOnPage = true;
-    this.page = 1;
-
-    console.log(`productsOnPage = ${this.productsOnPage}`);
-
-    try {
-      while (this.productsOnPage) {
-        const kgUrl = `${process.env.KG_URL}?per_page=100&page=${this.page}&${process.env.KG_KEYS}`;
-        const resp = await axios.get(kgUrl);
-        if (resp.data.length === 0) {
-          this.productsOnPage = false;
-        }
-        const products = await this.productModel.find();
-
-        await Promise.all(
-          resp.data.map(async (item: any) => {
-            const kgProduct = this.getKgProduct(item);
-
-            const existingProduct = await this.productModel.findOne({
-              itemCode: item.id.toString(),
-            });
-            if (!existingProduct) {
-              const newProduct = new this.productModel(kgProduct);
-              if (newProduct.status === 'ACTIVE' && newProduct.quantity > 0)
-                await newProduct.save();
-            } else {
-              await this.productModel.findOneAndUpdate(
-                existingProduct._id,
-                kgProduct,
-              );
-            }
-          }),
-        );
-        this.page = this.page + 1;
-        console.log(
-          'Page #: ',
-          this.page,
-          '   |   # of products: ',
-          resp.data.length,
-        );
-      }
-    } catch (error) {
-      // Handle duplicate key error
-      if (error.name === 'MongoError' && error.code === 11000) {
-        console.log('Duplicate key error. Handle accordingly.');
-      } else {
-        // Handle other errors
-        console.error('An error occurred:', error);
-      }
-    }
-  }
-
   async create(createProductDto: CreateProductDto, jwt: any) {
     try {
       const { userId } = this.jwtService.decode(jwt) as { userId: any };

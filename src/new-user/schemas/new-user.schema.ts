@@ -31,14 +31,28 @@ export class NewUser {
   @Prop({ required: false })
   company: string;
 
-  @Prop({ required: true, default: { ID: '', TIN: '', License: '', R_Cert: ''} })
+  @Prop({ required: true })
+  numberOfEmployees: number;
+
+  @Prop({ required: true })
+  numberOfBranches: number;
+
+  @Prop({ required: true })
+  expectedCredit: number;
+
+  @Prop({ required: false })
+  businessType: string;
+
+  @Prop({
+    required: true,
+    default: { ID: '', TIN: '', License: '', R_Cert: '' },
+  })
   documents: Documents;
 
-  @Prop({ required: true, default:true})
+  @Prop({ required: true, default: true })
   pending: boolean;
-/*   @Prop({ required: false }) 
+  /*   @Prop({ required: false }) 
   profilePicture: string;  */
-
 }
 
 export const NewUserSchema = SchemaFactory.createForClass(NewUser);

@@ -70,10 +70,7 @@ export class CreditController {
     @Req() req: Request,
     @Res() res: Response,
   ) {
-    return this.handlePromise(
-      this.creditService.create(createCreditDto),
-      res,
-    );
+    return this.handlePromise(this.creditService.create(createCreditDto), res);
   }
 
   @Get()
@@ -90,35 +87,37 @@ export class CreditController {
   @Get('totalPaidAmount')
   // @UseGuards(JwtAuthGuard, RoleGuard)
   // @Roles(Role.credit_manager)
-  calculateTotalPaidAmount(){
+  calculateTotalPaidAmount() {
     return this.creditService.calculateTotalPaidAmount();
   }
-  
+
   @Get('TotalCreditInfo')
-  TotalCreditInfo(){
-    return this.creditService.TotalCreditInfo()
+  TotalCreditInfo() {
+    return this.creditService.TotalCreditInfo();
   }
 
   @Get('getCreditsByUserId/:id')
   // @UseGuards(JwtAuthGuard, RoleGuard)
   //  @Roles(Role.customer)
-   getCreditsByUserId(@Param('id') id: string){
-    return this.creditService.getCreditsByUserId(id)    
-   }
-@Get('getSinglUserCreditInfo/:id')
-getSingleUserCreditInfo(@Param('id') id: string){
-  return this.creditService.getSingleUserCreditInfo(id)
-}
+  getCreditsByUserId(@Param('id') id: string) {
+    return this.creditService.getCreditsByUserId(id);
+  }
+  @Get('getSinglUserCreditInfo/:id')
+  getSingleUserCreditInfo(@Param('id') id: string) {
+    return this.creditService.getSingleUserCreditInfo(id);
+  }
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.creditService.findOne(id);
   }
 
   @Patch('status/:id')
-  updateStatus(@Param('id') id: string, @Body() updateCreditStatusDto: UpdateCreditStatusDto) {
+  updateStatus(
+    @Param('id') id: string,
+    @Body() updateCreditStatusDto: UpdateCreditStatusDto,
+  ) {
     return this.creditService.updateStatus(id, updateCreditStatusDto);
   }
-
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateCreditDto: UpdateCreditDto) {

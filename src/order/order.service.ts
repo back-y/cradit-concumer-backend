@@ -145,7 +145,7 @@ async findallorder(){
 
       const query = role === 'customer' ? { userId } : {};
 
-      const orders = this.orderModel.find(query);
+      const orders = this.orderModel.find(query).sort({ createdAt: -1 });
 
       return orders;
     } catch (error) {
