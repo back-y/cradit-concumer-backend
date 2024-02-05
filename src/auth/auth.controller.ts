@@ -58,10 +58,6 @@ export class AuthController {
   @Post('signup')
   async signup(@Body() SignupDto: SignupDto, @Res() res: Response) {
     try {
-      if (1 == 1) {
-        res.status(403);
-        throw new UnauthorizedException('User Testing');
-      }
       const userExists = await this.authService.findUser(SignupDto.email);
 
       if (userExists) {

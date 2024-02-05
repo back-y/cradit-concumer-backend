@@ -52,7 +52,7 @@ export class CreateNewUserDto {
   @IsNotEmpty()
   @IsString()
   businessType: string;
-   // @IsOptional()
+  // @IsOptional()
   // @IsNotEmpty()
   // profilePicture: string;
 }
