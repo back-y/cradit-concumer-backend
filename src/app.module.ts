@@ -20,6 +20,8 @@ import { CustomerModule } from './customer/customer.module';
 import { IndividualModule } from './individual/individual.module';
 
 import { ScheduleModule } from '@nestjs/schedule';
+import { NotificationsController } from './notifications/notifications.controller';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
   imports: [
@@ -27,6 +29,7 @@ import { ScheduleModule } from '@nestjs/schedule';
     //   rootPath: join(__dirname, '..', 'uploads'),
     // }),
     ScheduleModule.forRoot(),
+    EventEmitterModule.forRoot(),
 
     ConfigModule.forRoot({
       load: [config],
@@ -49,7 +52,7 @@ import { ScheduleModule } from '@nestjs/schedule';
     CustomerModule,
     IndividualModule,
   ],
-  controllers: [AppController, FileController],
+  controllers: [AppController, FileController, NotificationsController],
   providers: [AppService],
 })
 export class AppModule {}
