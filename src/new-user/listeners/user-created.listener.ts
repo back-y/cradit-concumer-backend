@@ -9,7 +9,7 @@ export class UserCreatedListener {
   handleUserCreatedEvent(event: UserCreatedEvent) {
     const smsData = {
       phone: '0935587112',
-      text: 'Testing Email/sms for user created',
+      text: `${event.name} ,  You are becoming a purposeblack KCCM customer, Thanks for using our services`,
     };
     const sms = this.sendSms(smsData);
 
