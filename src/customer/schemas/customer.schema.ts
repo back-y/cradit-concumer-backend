@@ -60,8 +60,8 @@ export class Customer {
 
   @Prop({ required: false })
   approvedBy: string;
-  // @Prop({ required: false }) // New profile picture field
-  // profilePicture: string;
+  @Prop({ required: false }) // New profile picture field
+  profilePicture: string;
 }
 
 export const CustomerSchema = SchemaFactory.createForClass(Customer);

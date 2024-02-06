@@ -68,30 +68,41 @@ export class NewUserController {
     );
   }
 
-  //     @Post()
-  //   @UseInterceptors(
-  //     FileFieldsInterceptor([
-  //         { name: 'profilePicture', maxCount: 1 },
-  //         ], {
-  //         storage: diskStorage({
-  //         destination: './uploads',
-  //         filename: (req, file, cb) => {
-  //             const randomName = Array(10)
-  //             .fill(null)
-  //             .map(() => Math.round(Math.random() * 16).toString(16))
-  //             .join('');
-  //             return cb(null, `${randomName}${extname(file.originalname)}`);
-  //         },
-  //         }),
-  //     }),
-  //   )
-  //   create(
-  //     @UploadedFiles() files: {
-  //       profilePicture: Express.Multer.File,
-  //     },@Body() createNewUserDto: CreateNewUserDto) {
-  //       const profilePicture = files.profilePicture;
-  //         return this.newUserService.create(createNewUserDto,[profilePicture])
-  //     }
+  @Post('profilePic/:id')
+  @UseInterceptors(
+    FileFieldsInterceptor(
+      [
+        { name: 'profilePicture', maxCount: 1 }
+      ],
+      {
+        storage: diskStorage({
+          destination: './uploads',
+          filename: (req, file, cb) => {
+            const randomName = Array(10)
+              .fill(null)
+              .map(() => Math.round(Math.random() * 16).toString(16))
+              .join('');
+            return cb(null, `${randomName}${extname(file.originalname)}`);
+          },
+        }),
+      },
+    ),
+  )
+  async uploadProfile(
+    @UploadedFiles()
+    files: {
+      profilePicture: Express.Multer.File;
+    },
+    @Param('id') id: string,
+  ){
+    const profilePicture = files.profilePicture;
+
+    // Call the service method with the files and id
+    return await this.newUserService.uploadProfile(
+      [profilePicture],
+      id,
+    );
+  }
   @Post()
   create(@Body() createNewUserDto: CreateNewUserDto) {
     return this.newUserService.create(createNewUserDto);

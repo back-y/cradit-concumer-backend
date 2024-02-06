@@ -65,7 +65,7 @@ export class CreateCustomerDto {
   @IsString()
   businessType: string;
 
-  // @IsOptional()
-  // @IsNotEmpty()
-  // profilePicture: string;
+  @IsOptional()
+  @IsNotEmpty()
+  profilePicture: string;
 }

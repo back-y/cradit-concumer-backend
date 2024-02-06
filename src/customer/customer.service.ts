@@ -62,20 +62,26 @@ export class CustomerService {
             `Error deleting file ${imgNames[index]}, probably not found:`,
             error,
           );
-          // throw new NotFoundException(`File ${imgNames[index]} not found.`);
+          // throw new NotFoundException(`File ${imgNames[index]} not found.`)
         }
       });
     }
   }
 
-  // async create(createCustomerDto: CreateCustomerDto, profilePicture: Array<Express.Multer.File>) {
-  //   const customer = new this.customerModel(createCustomerDto)
-  //   const  filename= profilePicture[0][0].filename;
-  //   customer.profilePicture = filename
+  async uploadProfile(files: Array<Express.Multer.File>, id: string) {
+    try {
+        const newUser = await this.customerModel.findById(id);
 
-  //   return await customer.save();
-  // }
+        newUser.profilePicture = files[0][0].filename;
 
+        console.log('new-user: ', newUser)
+        
+        return newUser.save()
+    
+    } catch (error) {
+        return error;
+    }
+}
   async create(createCustomerDto: CreateCustomerDto) {
     const customer = new this.customerModel(createCustomerDto);
     const cus = await customer.save();

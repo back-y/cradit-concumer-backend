@@ -90,16 +90,21 @@ export class NewUserService {
     }
   }
 
-  // async create(createNewUserDto: CreateNewUserDto,profilePicture: Array<Express.Multer.File>) {
-  //     this.sendWelcomeEmail(createNewUserDto.name, createNewUserDto.email)
-  //     const newUser = new this.newUserModel(createNewUserDto);
-  //     const  filename= profilePicture[0][0].filename;
-  //     newUser.profilePicture = filename
+  async uploadProfile(files: Array<Express.Multer.File>, id: string) {
+    try {
+        const newUser = await this.newUserModel.findById(id);
 
-  //     console.log(newUser)
+        newUser.profilePicture = files[0][0].filename;
+        
 
-  //     return await newUser.save();
-  // }
+        console.log('new-user: ', newUser)
+        
+        return newUser.save()
+    
+    } catch (error) {
+        return error;
+    }
+}
   async create(createNewUserDto: CreateNewUserDto) {
     this.sendWelcomeEmail(createNewUserDto.name, createNewUserDto.email);
     const newUser = new this.newUserModel(createNewUserDto);
