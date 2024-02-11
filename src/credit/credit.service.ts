@@ -156,21 +156,21 @@ async TotalCreditInfo(): Promise<any[]> {
     // Construct JSON objects based on the returned values
     const creditInfoArray = [
       {
-        stats: `${totalCreditGaven} ETB`,
+        stats: `${totalCreditGaven.toLocaleString()} ETB`,
         title: 'Total Credit Given',
         color: 'primary',
       },
       {
-        stats: `${paidAmount} ETB`,
+        stats: `${paidAmount.toLocaleString()} ETB`,
         title: 'Total Credit Paid',
         color: 'success',
       },
       {
-        stats: `${unPaidAmount} ETB`,
+        stats: `${unPaidAmount.toLocaleString()} ETB`,
         title: 'Total Credit Unpaid',
         color: 'warning',
       },{
-    stats: `${withInterest}`,
+    stats: `${withInterest.toLocaleString()}`,
     color: 'info',
     title: 'Total Unpaid Credit With Interest',
   }
@@ -275,22 +275,22 @@ async getSingleUserCreditInfo(id:string) :Promise<any[]> {
     // Construct JSON objects based on the returned values
     const creditInfoArray = [
       {
-        stats: `${totalCreditGaven} ETB`,
+        stats: `${totalCreditGaven.toLocaleString()} ETB`,
         title: 'Total Credit Given',
         color: 'primary',
       },
       {
-        stats: `${paidAmount} ETB`,
+        stats: `${paidAmount.toLocaleString()} ETB`,
         title: 'Total Credit Paid',
         color: 'success',
       },
       {
-        stats: `${unPaidAmount} ETB`,
+        stats: `${unPaidAmount.toLocaleString()} ETB`,
         title: 'Total Credit Unpaid',
         color: 'warning',
       },
       {
-        stats: `${withInterest}`,
+        stats: `${withInterest.toLocaleString()}`,
         color: 'info',
         title: 'Total Unpaid Credit With Interest',
       }
