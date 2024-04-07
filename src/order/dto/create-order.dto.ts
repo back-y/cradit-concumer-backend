@@ -8,7 +8,7 @@ export interface orderItems {
   quantity: number;
 
   price: number;
-  // new 
+  
 }
 
 export class CreateOrderDto {
